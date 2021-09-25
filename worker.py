@@ -67,7 +67,10 @@ class worker(threading.Thread):
             message = self.socket.recv(8000).decode("utf-8")
             print(message)
             message = message.splitlines()
-            key_mes = message[0].split()
+            if(message):
+                key_mes = message[0].split()
+            else:
+                self.restart()
             file_name = "index.html"
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]

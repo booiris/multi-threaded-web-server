@@ -23,7 +23,7 @@ class worker(threading.Thread):
 
 while True:
     try: 
-        clie?!?jedi=0, nt,addr = server_socket.accept()?!? (*_**values: object*_*, sep: Optional[str]=..., end: Optional[str]=..., file: Optional[SupportsWrite[str]]=..., flush: bool=...) ?!?jedi?!?
+        client,addr = server_socket.accept()
         print(client.getpeername(),client.gethostname)
     except socket.timeout:
         print("main server timeout")

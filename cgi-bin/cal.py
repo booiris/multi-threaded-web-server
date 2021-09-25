@@ -1,7 +1,5 @@
 import sys
 
-print(sys.argv)
-
 ini = sys.argv[1]
 ini = ini.split("&")
 a = ini[0].split("=")[1]

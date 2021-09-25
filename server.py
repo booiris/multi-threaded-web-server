@@ -10,7 +10,7 @@ max_connection = 5
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_name = socket.gethostname()
 host_name = socket.gethostbyname(host_name)
-address = (host_name, 8888)
+address = ("192.168.137.1", 8888)  ## 有时候返回 wsl 的 ip 地址
 server_socket.bind(address)
 server_socket.settimeout(120)
 server_socket.listen()

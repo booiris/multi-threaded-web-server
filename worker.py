@@ -1,7 +1,6 @@
 import threading
 from queue import Queue
 import subprocess
-import sys
 
 tasks = Queue()
 working_thread = Queue()
@@ -17,6 +16,7 @@ class worker(threading.Thread):
         self.start()
 
     def restart(self):
+        working_thread.get()
         if self.file_handle != None:
             self.file_handle.close()
             self.file_handle = None
@@ -26,12 +26,13 @@ class worker(threading.Thread):
         if self.proc != None:
             self.proc.kill()
             self.proc = None
-        working_thread.get()
 
     def get(self, file_name, is_head=False):
         try:
             open(file_name, "rb")
-            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+            file_suffix = file_name.split('.')
+            file_suffix = file_suffix[-1].encode()
+            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b"\r\n"
         except IOError:
             content = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n"
             file_name = "404.html"
@@ -55,6 +56,7 @@ class worker(threading.Thread):
         res = self.proc.stdout.read()
         content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
         content += res
+        print(content)
         self.socket.sendall(content)
         self.proc = None
 
@@ -67,7 +69,7 @@ class worker(threading.Thread):
             message = message.splitlines()
             key_mes = message[0].split()
             file_name = "index.html"
-            if (len(key_mes) > 2):
+            if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]
 
             if (key_mes[0] == 'GET'):

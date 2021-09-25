@@ -24,7 +24,7 @@ class worker(threading.Thread):
             self.socket.close()
             self.socket = None
         if self.proc != None:
-            self.proc.terminate()
+            self.proc.kill()
             self.proc = None
         working_thread.get()
 
@@ -45,12 +45,17 @@ class worker(threading.Thread):
         content += page
         self.socket.sendall(content)
 
-    def post(self, file_name):
-        self.proc = subprocess.Popen(['python', file_name],
+    def post(self, file_name, args):
+        command = 'python ' + file_name + ' "' + args + '" "' + self.socket.getsockname(
+        )[0] + '" "' + str(self.socket.getsockname()[1]) + '"'
+        self.proc = subprocess.Popen(command,
                                      shell=True,
-                                     capture_output=True,
-                                     check=True)
-        print(self.proc.stdout.decode("utf-8"))
+                                     stdout=subprocess.PIPE)
+        self.proc.wait()
+        res = self.proc.stdout.read()
+        content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+        content += res
+        self.socket.sendall(content)
         self.proc = None
 
     def run(self):
@@ -59,8 +64,8 @@ class worker(threading.Thread):
             working_thread.put(self)
             message = self.socket.recv(8000).decode("utf-8")
             print(message)
-            key_mes = message.splitlines()
-            key_mes = key_mes[0].split()
+            message = message.splitlines()
+            key_mes = message[0].split()
             file_name = "index.html"
             if (len(key_mes) > 2):
                 file_name = key_mes[1][1:]
@@ -68,7 +73,7 @@ class worker(threading.Thread):
             if (key_mes[0] == 'GET'):
                 self.get(file_name)
             elif (key_mes[0] == 'POST'):
-                self.post(file_name)
+                self.post(file_name, message[-1])
             elif (key_mes[0] == 'HEAD'):
                 self.get(file_name, True)
             else:

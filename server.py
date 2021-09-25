@@ -2,7 +2,6 @@
 import socket
 from worker import tasks, working_thread, worker
 import threading
-from queue import Queue
 import time
 
 max_connection = 5

@@ -13,6 +13,8 @@ address = (host_name, 8888)
 server_socket.bind(address)
 server_socket.settimeout(120)
 server_socket.listen()
+
+print(address)
 ############
 
 class worker(threading.Thread):
@@ -24,7 +26,7 @@ class worker(threading.Thread):
 while True:
     try: 
         client,addr = server_socket.accept()
-        print(client.getpeername(),client.gethostname)
+        print(client.getpeername(),client.getsockname())
     except socket.timeout:
         print("main server timeout")
 

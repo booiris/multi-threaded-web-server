@@ -5,7 +5,7 @@ import threading
 from queue import Queue
 import time
 
-max_connection = 20
+max_connection = 5
 
 ############    主线程
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,22 +27,25 @@ class thread_pool(threading.Thread):
         self.start()
 
     def run(self):
+        for i in range(max_connection):
+            worker()
         while True:
             working_thread_cnt = working_thread.qsize()
             print("now working thread: " + str(working_thread_cnt) +
-                  " ; free thread: " + str(max_connection - working_thread_cnt) +
+                  " ; free thread: " +
+                  str(max_connection - working_thread_cnt) +
                   " ; now waiting request: " + str(tasks.qsize()))
             time.sleep(1)
 
 
 thread_pool()
-for i in range(max_connection):
-    worker()
 
 while True:
     try:
         client, addr = server_socket.accept()
         print("recv: ", client.getpeername(), client.getsockname())
+        if(working_thread.qsize() == max_connection):
+            working_thread.get().restart()
         tasks.put(client)
     except socket.timeout:
         print("main server timeout")

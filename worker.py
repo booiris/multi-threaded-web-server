@@ -29,7 +29,7 @@ class worker(threading.Thread):
 
     def get(self, file_name, is_head=False):
         try:
-            open(file_name, "rb")
+            open(file_name, "rb") ## TODO 可能未关闭句柄，用os实现查看文件是否存在
             file_suffix = file_name.split('.')
             file_suffix = file_suffix[-1].encode()
             content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b"\r\n"
@@ -47,6 +47,8 @@ class worker(threading.Thread):
         self.socket.sendall(content)
 
     def post(self, file_name, args):
+        ## TODO 403 页面
+        ## TODO 计算器可能有写小 bug ，在手机访问的时候传入的参数不对，到时候修一修
         command = 'python ' + file_name + ' "' + args + '" "' + self.socket.getsockname(
         )[0] + '" "' + str(self.socket.getsockname()[1]) + '"'
         self.proc = subprocess.Popen(command,
@@ -75,6 +77,7 @@ class worker(threading.Thread):
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]
 
+            ## TODO 添加异常中断达到重启线程的目的
             if (key_mes[0] == 'GET'):
                 self.get(file_name)
             elif (key_mes[0] == 'POST'):

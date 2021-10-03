@@ -29,7 +29,7 @@ class worker(threading.Thread):
 
     def get(self, file_name, is_head=False):
         try:
-            open(file_name, "rb") ## TODO 可能未关闭句柄，用os实现查看文件是否存在
+            open(file_name, "rb")  ## TODO 可能未关闭句柄，用os实现查看文件是否存在
             file_suffix = file_name.split('.')
             file_suffix = file_suffix[-1].encode()
             content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b"\r\n"
@@ -69,7 +69,7 @@ class worker(threading.Thread):
             message = self.socket.recv(8000).decode("utf-8")
             print(message)
             message = message.splitlines()
-            if(message):
+            if (message):
                 key_mes = message[0].split()
             else:
                 self.restart()
@@ -77,14 +77,16 @@ class worker(threading.Thread):
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]
 
-            ## TODO 添加异常中断达到重启线程的目的
-            if (key_mes[0] == 'GET'):
-                self.get(file_name)
-            elif (key_mes[0] == 'POST'):
-                self.post(file_name, message[-1])
-            elif (key_mes[0] == 'HEAD'):
-                self.get(file_name, True)
-            else:
-                content = b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
-                self.socket.sendall(content)
+            try:
+                if (key_mes[0] == 'GET'):
+                    self.get(file_name)
+                elif (key_mes[0] == 'POST'):
+                    self.post(file_name, message[-1])
+                elif (key_mes[0] == 'HEAD'):
+                    self.get(file_name, True)
+                else:
+                    content = b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
+                    self.socket.sendall(content)
+            except Exception as e:
+                print("reason:", e)
             self.restart()

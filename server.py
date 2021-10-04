@@ -5,17 +5,18 @@ import threading
 import time
 
 max_connection = 5
+port = 8888
 
 ############    主线程
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_name = socket.gethostname()
 host_name = socket.gethostbyname(host_name)
-address = (host_name, 8888)  ## 有时候返回 wsl 的 ip 地址
+address = ("0.0.0.0", port)
 server_socket.bind(address)
 server_socket.settimeout(120)
 server_socket.listen()
 
-print(address)
+print(host_name + ':' + str(port))
 ############
 
 
@@ -43,7 +44,7 @@ while True:
     try:
         client, addr = server_socket.accept()
         print("recv: ", client.getpeername(), client.getsockname())
-        if(working_thread.qsize() == max_connection):
+        if (working_thread.qsize() == max_connection):
             working_thread.get().restart()
         tasks.put(client)
     except socket.timeout:

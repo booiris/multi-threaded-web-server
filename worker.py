@@ -1,6 +1,7 @@
 import threading
 from queue import Queue
 import subprocess
+import os
 
 tasks = Queue()
 working_thread = Queue()
@@ -28,12 +29,11 @@ class worker(threading.Thread):
             self.proc = None
 
     def get(self, file_name, is_head=False):
-        try:
-            open(file_name, "rb")  ## TODO 可能未关闭句柄，用os实现查看文件是否存在
+        if (os.path.isfile(file_name)):
             file_suffix = file_name.split('.')
             file_suffix = file_suffix[-1].encode()
             content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b"\r\n"
-        except IOError:
+        else:
             content = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n"
             file_name = "404.html"
         page = b''
@@ -47,7 +47,6 @@ class worker(threading.Thread):
         self.socket.sendall(content)
 
     def post(self, file_name, args):
-        ## TODO 403 页面
         ## TODO 计算器可能有写小 bug ，在手机访问的时候传入的参数不对，到时候修一修
         command = 'python ' + file_name + ' "' + args + '" "' + self.socket.getsockname(
         )[0] + '" "' + str(self.socket.getsockname()[1]) + '"'
@@ -55,10 +54,18 @@ class worker(threading.Thread):
                                      shell=True,
                                      stdout=subprocess.PIPE)
         self.proc.wait()
-        res = self.proc.stdout.read()
-        content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
-        content += res
-        print(content)
+        if(self.proc.poll() == 2): ## 文件不存在时返回值为2
+            content = b"HTTP/1.1 403 Forbidden\r\nContent-Type: text/html\r\n"
+            page = b''
+            self.file_handle = open("403.html", "rb")
+            for line in self.file_handle:
+                page += line
+            self.file_handle.close()
+            content += b'\r\n'
+            content += page
+        else:
+            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+            content += self.proc.stdout.read()
         self.socket.sendall(content)
         self.proc = None
 
@@ -67,7 +74,6 @@ class worker(threading.Thread):
             self.socket = tasks.get()
             working_thread.put(self)
             message = self.socket.recv(8000).decode("utf-8")
-            print(message)
             message = message.splitlines()
             if (message):
                 key_mes = message[0].split()

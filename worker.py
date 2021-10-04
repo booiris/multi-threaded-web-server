@@ -13,11 +13,12 @@ class worker(threading.Thread):
         self.socket = None
         self.proc = None
         threading.Thread.__init__(self)
-        self.daemon = True
+        self.setDaemon(True)
         self.start()
 
-    def restart(self):
-        working_thread.get()
+    def restart(self, is_terminate=False):
+        if (not is_terminate):
+            working_thread.get()
         if self.file_handle != None:
             self.file_handle.close()
             self.file_handle = None
@@ -25,7 +26,8 @@ class worker(threading.Thread):
             self.socket.close()
             self.socket = None
         if self.proc != None:
-            self.proc.kill()
+            if (self.proc.poll() != None):
+                self.proc.kill()
             self.proc = None
 
     def get(self, file_name, is_head=False):
@@ -41,7 +43,6 @@ class worker(threading.Thread):
             self.file_handle = open(file_name, "rb")
             for line in self.file_handle:
                 page += line
-            self.file_handle.close()
         content += b'\r\n'
         content += page
         self.socket.sendall(content)
@@ -60,14 +61,12 @@ class worker(threading.Thread):
             self.file_handle = open("403.html", "rb")
             for line in self.file_handle:
                 page += line
-            self.file_handle.close()
             content += b'\r\n'
             content += page
         else:
             content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
             content += self.proc.stdout.read()
         self.socket.sendall(content)
-        self.proc = None
 
     def run(self):
         while True:
@@ -95,4 +94,5 @@ class worker(threading.Thread):
                     self.socket.sendall(content)
             except Exception as e:
                 print("reason:", e)
+                continue
             self.restart()

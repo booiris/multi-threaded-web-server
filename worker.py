@@ -4,7 +4,7 @@ import subprocess
 import os
 
 tasks = Queue()
-working_thread = Queue()
+working_thread = list()
 
 
 class worker(threading.Thread):
@@ -16,9 +16,8 @@ class worker(threading.Thread):
         self.setDaemon(True)
         self.start()
 
-    def restart(self, is_terminate=False):
-        if (not is_terminate):
-            working_thread.get()
+    def restart(self):   
+        working_thread.remove(self)
         if self.file_handle != None:
             self.file_handle.close()
             self.file_handle = None
@@ -71,7 +70,7 @@ class worker(threading.Thread):
     def run(self):
         while True:
             self.socket = tasks.get()
-            working_thread.put(self)
+            working_thread.append(self)
             message = self.socket.recv(8000).decode("utf-8")
             message = message.splitlines()
             if (message):
@@ -94,5 +93,4 @@ class worker(threading.Thread):
                     self.socket.sendall(content)
             except Exception as e:
                 print("reason:", e)
-                continue
             self.restart()

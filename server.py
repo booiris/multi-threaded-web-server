@@ -30,11 +30,11 @@ class thread_pool(threading.Thread):
         for i in range(max_connection):
             worker()
         while True:
-            working_thread_cnt = working_thread.qsize()
             for i in range(5):
-                if (working_thread.qsize() == max_connection):
-                    working_thread.get().restart(is_terminate=True)
+                if (len(working_thread) == max_connection):
+                    working_thread[0].restart()
                 time.sleep(0.2)
+            working_thread_cnt = len(working_thread)
             print("now working thread: " + str(working_thread_cnt) +
                   " ; free thread: " +
                   str(max_connection - working_thread_cnt) +

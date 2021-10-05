@@ -39,14 +39,13 @@ class worker(threading.Thread):
         else:
             content = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html;charset=utf-8\r\n"
             file_name = "404.html"
-        page = b''
+        content += b'\r\n'
+        self.socket.sendall(content)
         if not is_head:
             self.file_handle = open(file_name, "rb")
             for line in self.file_handle:
-                page += line
-        content += b'\r\n'
-        content += page
-        self.socket.sendall(content)
+                self.socket.sendall(line)
+
 
     def post(self, file_name, args):
         ## TODO 计算器可能有写小 bug ，在手机访问的时候传入的参数不对，到时候修一修

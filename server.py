@@ -4,7 +4,7 @@ from worker import tasks, working_thread, worker
 import threading
 import time
 
-max_connection = 10  #
+max_connection = 5  #
 port = 8888
 
 ############    主线程
@@ -12,6 +12,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_name = socket.gethostname()
 host_name = socket.gethostbyname(host_name)
 address = ("0.0.0.0", port)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind(address)
 server_socket.settimeout(60)
 server_socket.listen()
@@ -30,8 +31,9 @@ class thread_pool(threading.Thread):
         for i in range(max_connection):
             worker()
         while True:
-            for i in range(5):
-                if (len(working_thread) == max_connection):
+            for i in range(4):
+                if (len(working_thread) == max_connection
+                        and max_connection != 0):
                     working_thread[0].restart()
                 time.sleep(0.2)
             working_thread_cnt = len(working_thread)

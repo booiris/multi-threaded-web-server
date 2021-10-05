@@ -16,26 +16,28 @@ class worker(threading.Thread):
         self.setDaemon(True)
         self.start()
 
-    def restart(self):   
-        working_thread.remove(self)
-        if self.file_handle != None:
+    def restart(self):
+        if (self.file_handle != None):
             self.file_handle.close()
             self.file_handle = None
-        if self.socket != None:
-            self.socket.close()
-            self.socket = None
-        if self.proc != None:
-            if (self.proc.poll() != None):
-                self.proc.kill()
+        if (self.socket != None):
+            try:
+                self.socket.shutdown(2)
+                self.socket.close()
+            except Exception as e:
+                print("socket error:", e)
+                self.socket = None
+        if (self.proc != None and self.proc.poll() != None):
+            self.proc.kill()
             self.proc = None
 
     def get(self, file_name, is_head=False):
         if (os.path.isfile(file_name)):
             file_suffix = file_name.split('.')
             file_suffix = file_suffix[-1].encode()
-            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b"\r\n"
+            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/" + file_suffix + b";charset=utf-8\r\n"
         else:
-            content = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n"
+            content = b"HTTP/1.1 404 Not Found\r\nContent-Type: text/html;charset=utf-8\r\n"
             file_name = "404.html"
         page = b''
         if not is_head:
@@ -55,7 +57,7 @@ class worker(threading.Thread):
                                      stdout=subprocess.PIPE)
         self.proc.wait()
         if (self.proc.poll() == 2):  ## 文件不存在时返回值为2
-            content = b"HTTP/1.1 403 Forbidden\r\nContent-Type: text/html\r\n"
+            content = b"HTTP/1.1 403 Forbidden\r\nContent-Type: text/html;charset=utf-8\r\n"
             page = b''
             self.file_handle = open("403.html", "rb")
             for line in self.file_handle:
@@ -63,7 +65,7 @@ class worker(threading.Thread):
             content += b'\r\n'
             content += page
         else:
-            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+            content = b"HTTP/1.1 200 OK\r\nContent-Type: text/html;charset=utf-8\r\n"
             content += self.proc.stdout.read()
         self.socket.sendall(content)
 
@@ -94,3 +96,4 @@ class worker(threading.Thread):
             except Exception as e:
                 print("reason:", e)
             self.restart()
+            working_thread.remove(self)

@@ -22,14 +22,15 @@ print(host_name + ':' + str(port))
 
 
 class thread_pool(threading.Thread):
-    def __init__(self):
+    def __init__(self,log_name):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self.start()
+        self.log_name = log_name
 
     def run(self):
         for i in range(max_connection):
-            worker()
+            worker(log_name)
         while True:
             for i in range(4):
                 if (len(working_thread) == max_connection
@@ -43,7 +44,12 @@ class thread_pool(threading.Thread):
                   " ; now waiting request: " + str(tasks.qsize()))
 
 
-thread_pool()
+# 每一次运行都创建一个日志文件
+now_time = time.localtime()
+log_name = "log\\"+str(now_time.tm_year)+"-"+str(now_time.tm_mon)+"-"+str(now_time.tm_mday)+"-"+str(now_time.tm_hour)+"-"+str(now_time.tm_min)+"-"+str(now_time.tm_sec)+".txt"
+
+thread_pool(log_name)
+
 
 while True:
     try:

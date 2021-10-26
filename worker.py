@@ -103,10 +103,11 @@ class worker(threading.Thread):
         content = content + " " + self.msg[0].split(" ")[1].replace(" ", "") + " "
         content = content + str(file_size) +" "
         content = content + str(self.status_code) + " "
-        if(self.msg[0].split("/")[0].replace(" ","")== "POST"):
-            content = content + self.msg[11].split(" ")[1].replace(" ", "")
-        else:
-            content = content + self.msg[6].split(" ")[1].replace(" ", "")
+        for i in self.msg:
+            print(i)
+            print(i.split(" ")[0])
+            if(i.split(" ")[0]== "Referer:"):
+                content = content + i.split(" ")[1].replace(" ", "")
 
         content = content + "\n"
         with open(self.log_name,"a") as f:

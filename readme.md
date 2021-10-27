@@ -20,6 +20,7 @@ host : port/query.html
 
 ## 目录结构
 
+```bash
 .
 ├── cgi-bin              // cgi程序文件夹
 │   ├── cal.py           // 计算器程序 
@@ -47,6 +48,11 @@ host : port/query.html
 ├── readme.md
 ├── server.py            // 服务器主函数，用于绑定端口，和启动线程池管理
 └── worker.py            // 服务线程的具体实现，在 worker 类中
+```
 
+
+## 问题
+
+Safari 打开 cgi 界面后无法正确跳转
 
 

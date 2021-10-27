@@ -1,5 +1,5 @@
 {
-    "editor.fontSize": 18,
+    "editor.fontSize": 16,
     // 在终端中运行编译命令，否则我们无法与程序通过标准输入交互
     "code-runner.runInTerminal": true,
     // 运行代码之前清除之前的输出
@@ -15,7 +15,7 @@
     },
     // 在运行代码之前保存文件
     "code-runner.saveFileBeforeRun": true,
-    "terminal.integrated.fontSize": 18,
+    "terminal.integrated.fontSize": 16,
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.cursorBlinking": true,
     "files.encoding": "utf8",

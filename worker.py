@@ -31,7 +31,7 @@ class worker(threading.Thread):
                 self.socket.close()
             except Exception as e:
                 print("socket error:", e)
-                self.socket = None
+            self.socket = None
         if (self.proc != None and self.proc.poll() != None):
             self.proc.kill()
             self.proc = None

@@ -5,7 +5,7 @@ import threading
 import time
 
 max_connection = 5  #
-port = 8888
+port = 9000
 
 ############    主线程
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,7 +46,7 @@ class thread_pool(threading.Thread):
 
 # 每一次运行都创建一个日志文件
 now_time = time.localtime()
-log_name = "log\\"+str(now_time.tm_year)+"-"+str(now_time.tm_mon)+"-"+str(now_time.tm_mday)+"-"+str(now_time.tm_hour)+"-"+str(now_time.tm_min)+"-"+str(now_time.tm_sec)+".txt"
+log_name = "log/"+str(now_time.tm_year)+"-"+str(now_time.tm_mon)+"-"+str(now_time.tm_mday)+"-"+str(now_time.tm_hour)+"-"+str(now_time.tm_min)+"-"+str(now_time.tm_sec)+".txt"
 
 thread_pool(log_name)
 

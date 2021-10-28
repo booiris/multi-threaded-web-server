@@ -38,10 +38,10 @@ class thread_pool(threading.Thread):
                     working_thread[0].restart()
                 time.sleep(0.2)
             working_thread_cnt = len(working_thread)
-            print("now working thread: " + str(working_thread_cnt) +
-                  " ; free thread: " +
-                  str(max_connection - working_thread_cnt) +
-                  " ; now waiting request: " + str(tasks.qsize()))
+            # print("now working thread: " + str(working_thread_cnt) +
+            #       " ; free thread: " +
+            #       str(max_connection - working_thread_cnt) +
+            #       " ; now waiting request: " + str(tasks.qsize()))
 
 
 # 每一次运行都创建一个日志文件

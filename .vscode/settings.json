@@ -12,6 +12,7 @@
     "code-runner.executorMap": {
         "cpp": "g++ $fileName -o e:/acm/build/$fileNameWithoutExt && e:/acm/build/$fileNameWithoutExt",
        // g++ $fileName -o build/$fileNameWithoutExt && .\\build\\$fileNameWithoutExt
+       "python": "python3 $filename"
     },
     // 在运行代码之前保存文件
     "code-runner.saveFileBeforeRun": true,

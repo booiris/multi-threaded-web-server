@@ -15,7 +15,7 @@ address = ("0.0.0.0", port)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind(address)
 server_socket.settimeout(60)
-server_socket.listen()
+server_socket.listen(2)
 
 print(host_name + ':' + str(port))
 ############
@@ -33,8 +33,10 @@ class thread_pool(threading.Thread):
             worker(log_name)
         while True:
             for i in range(10):
+                # print(len(working_thread), tasks.empty())
                 if (len(working_thread) == max_connection
                         and max_connection != 0 and (not tasks.empty())):
+                    print("shutdown")
                     working_thread[0].restart()
                 time.sleep(0.1)
             working_thread_cnt = len(working_thread)

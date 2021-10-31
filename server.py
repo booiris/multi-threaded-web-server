@@ -22,7 +22,7 @@ print(host_name + ':' + str(port))
 
 
 class thread_pool(threading.Thread):
-    def __init__(self,log_name):
+    def __init__(self, log_name):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self.start()
@@ -32,24 +32,26 @@ class thread_pool(threading.Thread):
         for i in range(max_connection):
             worker(log_name)
         while True:
-            for i in range(4):
+            for i in range(10):
                 if (len(working_thread) == max_connection
-                        and max_connection != 0):
+                        and max_connection != 0 and (not tasks.empty())):
                     working_thread[0].restart()
-                time.sleep(0.2)
+                time.sleep(0.1)
             working_thread_cnt = len(working_thread)
-            # print("now working thread: " + str(working_thread_cnt) +
-            #       " ; free thread: " +
-            #       str(max_connection - working_thread_cnt) +
-            #       " ; now waiting request: " + str(tasks.qsize()))
+            print("now working thread: " + str(working_thread_cnt) +
+                  " ; free thread: " +
+                  str(max_connection - working_thread_cnt) +
+                  " ; now waiting request: " + str(tasks.qsize()))
 
 
 # 每一次运行都创建一个日志文件
 now_time = time.localtime()
-log_name = "log/"+str(now_time.tm_year)+"-"+str(now_time.tm_mon)+"-"+str(now_time.tm_mday)+"-"+str(now_time.tm_hour)+"-"+str(now_time.tm_min)+"-"+str(now_time.tm_sec)+".txt"
+log_name = "log/" + str(now_time.tm_year) + "-" + str(
+    now_time.tm_mon) + "-" + str(now_time.tm_mday) + "-" + str(
+        now_time.tm_hour) + "-" + str(now_time.tm_min) + "-" + str(
+            now_time.tm_sec) + ".txt"
 
 thread_pool(log_name)
-
 
 while True:
     try:

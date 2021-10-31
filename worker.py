@@ -9,7 +9,7 @@ working_thread = list()
 
 
 class worker(threading.Thread):
-    def __init__(self,log_name):
+    def __init__(self, log_name):
         self.file_handle = None
         self.socket = None
         self.proc = None
@@ -62,7 +62,6 @@ class worker(threading.Thread):
 
         self.write_log(file_size)
 
-
     def post(self, file_name, args):
         ## TODO 计算器可能有写小 bug ，在手机访问的时候传入的参数不对，到时候修一修
         command = 'python ' + file_name + ' "' + args + '" "' + self.socket.getsockname(
@@ -95,22 +94,29 @@ class worker(threading.Thread):
         self.write_log(file_size)
 
     # 日志书写（文件大小）
-    def write_log(self,file_size):
-        content = self.msg[1].split(":")[1].replace(" ","")
-        content = content +"--"
-        content = content +"["+str(time.localtime().tm_year)+"-"+str(time.localtime().tm_mon)+"-"+str(time.localtime().tm_mday)+"-"+str(time.localtime().tm_hour)+"-"+str(time.localtime().tm_min)+"-"+str(time.localtime().tm_sec)+"]"
-        content = content + " " + self.msg[0].split("/")[0].replace(" ","") + " "
-        content = content + " " + self.msg[0].split(" ")[1].replace(" ", "") + " "
-        content = content + str(file_size) +" "
+    def write_log(self, file_size):
+        content = self.msg[1].split(":")[1].replace(" ", "")
+        content = content + "--"
+        content = content + "[" + str(time.localtime().tm_year) + "-" + str(
+            time.localtime().tm_mon) + "-" + str(
+                time.localtime().tm_mday) + "-" + str(
+                    time.localtime().tm_hour) + "-" + str(
+                        time.localtime().tm_min) + "-" + str(
+                            time.localtime().tm_sec) + "]"
+        content = content + " " + self.msg[0].split("/")[0].replace(" ",
+                                                                    "") + " "
+        content = content + " " + self.msg[0].split(" ")[1].replace(" ",
+                                                                    "") + " "
+        content = content + str(file_size) + " "
         content = content + str(self.status_code) + " "
         for i in self.msg:
-            print(i)
-            print(i.split(" ")[0])
-            if(i.split(" ")[0]== "Referer:"):
+            # print(i)
+            # print(i.split(" ")[0])
+            if (i.split(" ")[0] == "Referer:"):
                 content = content + i.split(" ")[1].replace(" ", "")
 
         content = content + "\n"
-        with open(self.log_name,"a") as f:
+        with open(self.log_name, "a") as f:
             f.write(content)
 
     def run(self):
@@ -126,6 +132,10 @@ class worker(threading.Thread):
                 key_mes = message[0].split()
             else:
                 self.restart()
+                continue
+            if (len(key_mes) <= 1):
+                self.restart()
+                continue
             file_name = "index.html"
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]

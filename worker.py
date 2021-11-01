@@ -7,6 +7,8 @@ import time
 tasks = Queue()
 working_thread = list()
 
+sema=threading.Semaphore()
+
 
 class worker(threading.Thread):
     def __init__(self, log_name):
@@ -122,6 +124,9 @@ class worker(threading.Thread):
     def run(self):
         while True:
             self.socket = tasks.get()
+            working_thread.append(self)
+            sema.release()
+
             message = self.socket.recv(8000).decode("utf-8")
             message = message.splitlines()
 
@@ -145,12 +150,13 @@ class worker(threading.Thread):
                     self.get(file_name)
                 elif (key_mes[0] == 'POST'):
                     self.post(file_name, message[-1])
-                elif (key_mes[0] == 'HEAD'):
+                elif (key_mes[0] == 'HEAD'): # 轻量版get
                     self.get(file_name, True)
                 else:
                     content = b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
                     self.socket.sendall(content)
             except Exception as e:
-                print("reason:", e)
+                print("reason:", e) # read a closed file
             self.restart()
             working_thread.remove(self)
+            sema.release()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import socket
-from worker import tasks, working_thread, worker
+from worker import tasks, working_thread, worker,sema
 import threading
 import time
 
@@ -38,7 +38,9 @@ class thread_pool(threading.Thread):
                         and max_connection != 0 and (not tasks.empty())):
                     print("shutdown")
                     working_thread[0].restart()
-                time.sleep(0.1)
+                # time.sleep(0.1)
+            sema.acquire(timeout=1)
+            
             working_thread_cnt = len(working_thread)
             print("now working thread: " + str(working_thread_cnt) +
                   " ; free thread: " +
@@ -66,4 +68,4 @@ while True:
 
     except socket.timeout:
         print("main server timeout")
-        break
+        # break 取消timeout试试

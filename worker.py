@@ -149,13 +149,13 @@ class worker(threading.Thread):
                     self.get(file_name)
                 elif (key_mes[0] == 'POST'):
                     self.post(file_name, message[-1])
-                elif (key_mes[0] == 'HEAD'):
+                elif (key_mes[0] == 'HEAD'): # 轻量版get
                     self.get(file_name, True)
                 else:
                     content = b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n"
                     self.socket.sendall(content)
             except Exception as e:
-                print("reason:", e)
+                print("reason:", e) # read a closed file
             self.restart()
             working_thread.remove(self)
             sema.release()

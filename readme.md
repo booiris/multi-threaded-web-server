@@ -26,7 +26,7 @@ host : port/query.html
 │   ├── cal.py           // 计算器程序 
 │   ├── cal_res.html     // 计算结果页面
 │   ├── query.html       // 查询结果页面
-│   └── query.py         // 查询数据程序（没写完）
+│   └── query.py         // 查询数据程序
 ├── css                  // 页面css文件夹
 │   ├── img              // 网页图片文件夹
 │   │   ├── head.png     
@@ -44,7 +44,7 @@ host : port/query.html
 ├── cal.html             // 计算器页面
 ├── index1.html          // 主页1（测试css）
 ├── index.html           // 主页2（测试图片）
-├── query.html           // 数据查询界面（没写完）
+├── query.html           // 数据查询界面
 ├── readme.md
 ├── server.py            // 服务器主函数，用于绑定端口，和启动线程池管理
 └── worker.py            // 服务线程的具体实现，在 worker 类中

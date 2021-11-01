@@ -7,6 +7,8 @@ import time
 tasks = Queue()
 working_thread = list()
 
+sema=threading.Semaphore()
+
 
 class worker(threading.Thread):
     def __init__(self, log_name):
@@ -123,6 +125,8 @@ class worker(threading.Thread):
         while True:
             self.socket = tasks.get()
             working_thread.append(self)
+            sema.release()
+
             message = self.socket.recv(8000).decode("utf-8")
             message = message.splitlines()
 
@@ -154,3 +158,4 @@ class worker(threading.Thread):
                 print("reason:", e)
             self.restart()
             working_thread.remove(self)
+            sema.release()

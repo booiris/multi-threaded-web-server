@@ -51,8 +51,4 @@ host : port/query.html
 ```
 
 
-## 问题
-
-Safari 打开 cgi 界面后无法正确跳转
-
 

@@ -122,7 +122,6 @@ class worker(threading.Thread):
     def run(self):
         while True:
             self.socket = tasks.get()
-            working_thread.append(self)
             message = self.socket.recv(8000).decode("utf-8")
             message = message.splitlines()
 
@@ -140,6 +139,7 @@ class worker(threading.Thread):
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]
 
+            working_thread.append(self)
             try:
                 if (key_mes[0] == 'GET'):
                     self.get(file_name)

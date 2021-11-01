@@ -66,4 +66,4 @@ while True:
 
     except socket.timeout:
         print("main server timeout")
-        break
+        # break 取消timeout试试

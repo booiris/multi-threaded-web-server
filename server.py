@@ -60,8 +60,8 @@ thread_pool(log_name)
 while True:
     try:
         client, addr = server_socket.accept()
+        print("recv: ",client.getpeername(),client.getsockname())
         tasks.put(client)
-        print("recv: ", client.getpeername(), client.getsockname())
         # ！！！！ qsize不是阻塞的 当多个请求同时到达qsize不是当前的值
         # if (working_thread.qsize() == max_connection):
         #     working_thread.get().restart()

@@ -144,6 +144,7 @@ class worker(threading.Thread):
             if (key_mes[1] != "/"):
                 file_name = key_mes[1][1:]
 
+            working_thread.append(self)
             try:
                 if (key_mes[0] == 'GET'):
                     self.get(file_name)

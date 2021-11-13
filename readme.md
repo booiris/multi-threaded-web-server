@@ -14,8 +14,6 @@ host : port/index.html
 
 host : port/cal.html
 
-host : port/query.html
-
 查看效果
 
 ## 目录结构
